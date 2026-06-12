@@ -41,4 +41,3 @@ nbdist/
 
 # Variable de entorno para la contraseña de la base de datos
 .env
-dist/
