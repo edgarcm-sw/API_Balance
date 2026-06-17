@@ -8,13 +8,27 @@ USE balance_db;
 CREATE TABLE User (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    alias VARCHAR(100) NOT NULL UNIQUE,
+    avatar_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE User_Profile (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
     age INT NOT NULL,
     weight DECIMAL(5,2) NOT NULL,
     height DECIMAL(5,2) NOT NULL,
     tmb DECIMAL(7,2),
     getd DECIMAL(7,2),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );
+
+
+UPDATE User SET password = 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f'
+WHERE password = '' OR password IS NULL;
 
 CREATE TABLE Daily_Log (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -102,21 +116,12 @@ CREATE TABLE Sleep_Log (
 -- Módulo de Comunidad
 -- ==========================================
 
-CREATE TABLE Anonymous_Profile (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    alias VARCHAR(100) NOT NULL UNIQUE, -- Ej. 'Sauce', 'Cerezo', 'Marea'
-    avatar_url VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE,
-    UNIQUE (user_id)
-);
-
 CREATE TABLE Post (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    anonymous_profile_id INT NOT NULL,
+    user_id INT NOT NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (anonymous_profile_id) REFERENCES Anonymous_Profile(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Post_Interaction (
@@ -128,6 +133,21 @@ CREATE TABLE Post_Interaction (
     FOREIGN KEY (post_id) REFERENCES Post(id) ON DELETE CASCADE
 );
 
+
+ALTER TABLE User ADD COLUMN password VARCHAR(255) NOT NULL DEFAULT '' AFTER name;
+
 -- Datos iniciales básicos
 INSERT INTO Meal_Category (name) VALUES ('Desayuno'), ('Comida'), ('Snack'), ('Cena');
 INSERT INTO Activity_Type (name, calories_per_minute) VALUES ('Caminata', 4.0), ('Yoga', 3.5), ('Bicicleta', 7.0);
+
+
+
+
+SET SQL_SAFE_UPDATES = 0;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Eliminar los duplicados (ids 5, 6, 7)
+DELETE FROM User WHERE id IN (5, 6, 7);
+
+SET FOREIGN_KEY_CHECKS = 1;
+SET SQL_SAFE_UPDATES = 1;

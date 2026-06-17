@@ -65,14 +65,8 @@ INSERT INTO Sleep_Log (daily_log_id, bed_time, wake_time, total_hours, quality_p
 -- 4. Módulo de Comunidad
 -- ==========================================
 
--- Insertar Perfiles Anónimos (Anonymous_Profile)
-INSERT INTO Anonymous_Profile (user_id, alias, avatar_url) VALUES 
-(1, 'Roble_Fuerte', 'https://ejemplo.com/avatars/roble.png'),
-(2, 'Brisa_Marina', 'https://ejemplo.com/avatars/brisa.png'),
-(3, 'Cielo_Claro', NULL);
-
 -- Insertar Publicaciones (Post)
-INSERT INTO Post (anonymous_profile_id, content) VALUES 
+INSERT INTO Post (user_id, content) VALUES 
 (1, 'Hoy me costó muchísimo salir a caminar por la mañana, pero me siento genial de haberlo logrado. ¡La disciplina es clave!'),
 (2, '¿Alguien tiene alguna receta rápida para cenas ligeras? Me estoy aburriendo de mis opciones actuales.'),
 (3, 'Logré mi meta de sueño de esta semana. Realmente se nota la diferencia en los entrenamientos.');
@@ -84,3 +78,23 @@ INSERT INTO Post_Interaction (post_id, interaction_type, interaction_value) VALU
 (2, 'COMMENT', 'Te recomiendo probar pescado blanco a la plancha con espárragos, tardas menos de 15 minutos en prepararlo.'),
 (2, 'LIKE', NULL),
 (3, 'LIKE', NULL);
+
+INSERT INTO User (name, password, age, weight, height, tmb, getd) VALUES 
+('Carlos Mendoza', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 32, 78.50, 175.00, 1750.00, 2400.00),
+('Ana Sofia Rios', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 28, 62.00, 165.00, 1420.00, 1950.00),
+('Luis Fernanda', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 45, 90.00, 180.00, 1900.00, 2600.00);
+
+
+
+-- Inserts para los cambios de las tablas User, Post y eliminación de la tabla de usuarios anonimos
+-- Insertar Usuarios
+INSERT INTO User (name, password, alias, avatar_url) VALUES 
+('Carlos Mendoza', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Roble_Fuerte', NULL),
+('Ana Sofia Rios', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Brisa_Marina', NULL),
+('Luis Fernanda', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Cielo_Claro', NULL);
+
+-- Insertar Perfiles (User_Profile)
+INSERT INTO User_Profile (user_id, age, weight, height, tmb, getd) VALUES
+(1, 32, 78.50, 175.00, 1750.00, 2400.00),
+(2, 28, 62.00, 165.00, 1420.00, 1950.00),
+(3, 45, 90.00, 180.00, 1900.00, 2600.00);

@@ -5,25 +5,19 @@ import java.sql.Timestamp;
 public class User {
     private int id;
     private String name;
-    private int age;
-    private double weight;
-    private double height;
-    private double tmb;
-    private double getd;
+    private String password;
+    private String alias;
+    private String avatarUrl;
     private Timestamp createdAt;
 
-    public User() {}
+    // Datos de perfil (se usan solo en registro, no se persisten en esta clase)
+    private Integer age;
+    private Double weight;
+    private Double height;
+    private Double tmb;
+    private Double getd;
 
-    public User(int id, String name, int age, double weight, double height, double tmb, double getd, Timestamp createdAt) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.weight = weight;
-        this.height = height;
-        this.tmb = tmb;
-        this.getd = getd;
-        this.createdAt = createdAt;
-    }
+    public User() {}
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -31,21 +25,30 @@ public class User {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public double getWeight() { return weight; }
-    public void setWeight(double weight) { this.weight = weight; }
+    public String getAlias() { return alias; }
+    public void setAlias(String alias) { this.alias = alias; }
 
-    public double getHeight() { return height; }
-    public void setHeight(double height) { this.height = height; }
-
-    public double getTmb() { return tmb; }
-    public void setTmb(double tmb) { this.tmb = tmb; }
-
-    public double getGetd() { return getd; }
-    public void setGetd(double getd) { this.getd = getd; }
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
+
+    public Double getWeight() { return weight; }
+    public void setWeight(Double weight) { this.weight = weight; }
+
+    public Double getHeight() { return height; }
+    public void setHeight(Double height) { this.height = height; }
+
+    public Double getTmb() { return tmb; }
+    public void setTmb(Double tmb) { this.tmb = tmb; }
+
+    public Double getGetd() { return getd; }
+    public void setGetd(Double getd) { this.getd = getd; }
 }

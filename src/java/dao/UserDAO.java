@@ -2,6 +2,8 @@ package dao;
 
 import db.DatabaseConnection;
 import models.User;
+import models.UserProfile;
+import util.PasswordUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,30 +11,48 @@ import java.util.List;
 
 public class UserDAO {
 
+    private final UserProfileDAO profileDAO = new UserProfileDAO();
+
+    // Registro: crea User + User_Profile en una sola transacción
     public User createUser(User user) {
-        String sql = "INSERT INTO User (name, age, weight, height, tmb, getd) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
-            stmt.setString(1, user.getName());
-            stmt.setInt(2, user.getAge());
-            stmt.setDouble(3, user.getWeight());
-            stmt.setDouble(4, user.getHeight());
-            stmt.setDouble(5, user.getTmb());
-            stmt.setDouble(6, user.getGetd());
-            
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows > 0) {
+        String sql = "INSERT INTO User (name, password, alias, avatar_url) VALUES (?, ?, ?, ?)";
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, user.getName());
+                stmt.setString(2, PasswordUtil.hash(user.getPassword()));
+                stmt.setString(3, user.getAlias());
+                stmt.setString(4, user.getAvatarUrl());
+                stmt.executeUpdate();
+
                 try (ResultSet rs = stmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        user.setId(rs.getInt(1));
-                    }
+                    if (rs.next()) user.setId(rs.getInt(1));
                 }
             }
+
+            // Insertar User_Profile en la misma transacción
+            String sqlProfile = "INSERT INTO User_Profile (user_id, age, weight, height, tmb, getd) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement stmt2 = conn.prepareStatement(sqlProfile)) {
+                stmt2.setInt(1, user.getId());
+                stmt2.setInt(2, user.getAge() != null ? user.getAge() : 0);
+                stmt2.setDouble(3, user.getWeight() != null ? user.getWeight() : 0);
+                stmt2.setDouble(4, user.getHeight() != null ? user.getHeight() : 0);
+                stmt2.setDouble(5, user.getTmb() != null ? user.getTmb() : 0);
+                stmt2.setDouble(6, user.getGetd() != null ? user.getGetd() : 0);
+                stmt2.executeUpdate();
+            }
+
+            conn.commit();
             return user;
         } catch (SQLException e) {
+            try { if (conn != null) conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             e.printStackTrace();
             return null;
+        } finally {
+            try { if (conn != null) conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
@@ -40,12 +60,10 @@ public class UserDAO {
         String sql = "SELECT * FROM User WHERE id = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
+
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return extractUserFromResultSet(rs);
-                }
+                if (rs.next()) return extractUser(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -59,25 +77,36 @@ public class UserDAO {
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-             
-            while (rs.next()) {
-                users.add(extractUserFromResultSet(rs));
-            }
+
+            while (rs.next()) users.add(extractUser(rs));
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return users;
     }
 
-    private User extractUserFromResultSet(ResultSet rs) throws SQLException {
+    public boolean updateUser(int id, User user) {
+        String sql = "UPDATE User SET alias=?, avatar_url=? WHERE id=?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user.getAlias());
+            stmt.setString(2, user.getAvatarUrl());
+            stmt.setInt(3, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private User extractUser(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));
         user.setName(rs.getString("name"));
-        user.setAge(rs.getInt("age"));
-        user.setWeight(rs.getDouble("weight"));
-        user.setHeight(rs.getDouble("height"));
-        user.setTmb(rs.getDouble("tmb"));
-        user.setGetd(rs.getDouble("getd"));
+        user.setPassword(rs.getString("password"));
+        user.setAlias(rs.getString("alias"));
+        user.setAvatarUrl(rs.getString("avatar_url"));
         user.setCreatedAt(rs.getTimestamp("created_at"));
         return user;
     }
