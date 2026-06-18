@@ -4,7 +4,7 @@ import java.sql.Time;
 
 public class ExerciseEntry {
     private int id;
-    private int dailyLogId;
+    private Integer dailyLogId;
     private int activityTypeId;
     private int durationMinutes;
     private double caloriesBurned;
@@ -15,8 +15,8 @@ public class ExerciseEntry {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public int getDailyLogId() { return dailyLogId; }
-    public void setDailyLogId(int dailyLogId) { this.dailyLogId = dailyLogId; }
+    public Integer getDailyLogId() { return dailyLogId; }
+    public void setDailyLogId(Integer dailyLogId) { this.dailyLogId = dailyLogId; }
 
     public int getActivityTypeId() { return activityTypeId; }
     public void setActivityTypeId(int activityTypeId) { this.activityTypeId = activityTypeId; }

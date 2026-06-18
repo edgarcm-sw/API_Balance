@@ -38,7 +38,7 @@ public class SleepLogDAO {
     public List<SleepLog> getSleepLogsByUserId(int userId) {
         List<SleepLog> logs = new ArrayList<>();
         String sql = "SELECT sl.id, sl.daily_log_id, sl.bed_time, sl.wake_time, " +
-                     "sl.total_hours, sl.quality_percentage " +
+                     "sl.total_hours, sl.quality_percentage, dl.user_id " +
                      "FROM Sleep_Log sl " +
                      "JOIN Daily_Log dl ON sl.daily_log_id = dl.id " +
                      "WHERE dl.user_id = ? " +
@@ -52,6 +52,7 @@ public class SleepLogDAO {
                 while (rs.next()) {
                     SleepLog log = new SleepLog();
                     log.setId(rs.getInt("id"));
+                    log.setUserId(rs.getInt("user_id"));
                     log.setDailyLogId(rs.getInt("daily_log_id"));
                     log.setBedTime(rs.getTimestamp("bed_time"));
                     log.setWakeTime(rs.getTimestamp("wake_time"));

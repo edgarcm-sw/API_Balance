@@ -2,10 +2,13 @@ package resources;
 
 import com.google.gson.Gson;
 import dao.ExerciseEntryDAO;
+import dao.DailyLogDAO;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import models.ExerciseEntry;
+import models.DailyLog;
+import util.GsonUtil;
 
 import java.util.List;
 
@@ -13,7 +16,8 @@ import java.util.List;
 public class ExerciseEntryResource {
 
     private final ExerciseEntryDAO exerciseEntryDAO = new ExerciseEntryDAO();
-    private final Gson gson = new Gson();
+    private final DailyLogDAO dailyLogDAO = new DailyLogDAO();
+    private final Gson gson = GsonUtil.createGson();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -28,8 +32,18 @@ public class ExerciseEntryResource {
     public Response createExerciseEntry(@PathParam("userId") int userId, String jsonRequest) {
         try {
             ExerciseEntry entry = gson.fromJson(jsonRequest, ExerciseEntry.class);
-            ExerciseEntry created = exerciseEntryDAO.createExerciseEntry(entry);
 
+            // Si dailyLogId es null, obtener o crear el DailyLog de hoy
+            if (entry.getDailyLogId() == null || entry.getDailyLogId() == 0) {
+                DailyLog dailyLog = dailyLogDAO.getOrCreateTodayLog(userId);
+                if (dailyLog == null) {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity("{\"error\": \"Could not create daily log\"}").build();
+                }
+                entry.setDailyLogId(dailyLog.getId());
+            }
+
+            ExerciseEntry created = exerciseEntryDAO.createExerciseEntry(entry);
             if (created != null) {
                 return Response.status(Response.Status.CREATED).entity(gson.toJson(created)).build();
             } else {
@@ -37,8 +51,9 @@ public class ExerciseEntryResource {
                         .entity("{\"error\": \"Could not create exercise entry\"}").build();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"error\": \"Invalid JSON format\"}").build();
+                    .entity("{\"error\": \"Invalid JSON format: " + e.getMessage() + "\"}").build();
         }
     }
 

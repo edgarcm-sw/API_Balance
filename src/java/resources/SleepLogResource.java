@@ -2,10 +2,13 @@ package resources;
 
 import com.google.gson.Gson;
 import dao.SleepLogDAO;
+import dao.DailyLogDAO;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import models.SleepLog;
+import models.DailyLog;
+import util.GsonUtil;
 
 import java.util.List;
 
@@ -13,7 +16,8 @@ import java.util.List;
 public class SleepLogResource {
 
     private final SleepLogDAO sleepLogDAO = new SleepLogDAO();
-    private final Gson gson = new Gson();
+    private final DailyLogDAO dailyLogDAO = new DailyLogDAO();
+    private final Gson gson = GsonUtil.createGson();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -28,8 +32,20 @@ public class SleepLogResource {
     public Response createSleepLog(@PathParam("userId") int userId, String jsonRequest) {
         try {
             SleepLog log = gson.fromJson(jsonRequest, SleepLog.class);
-            SleepLog created = sleepLogDAO.createSleepLog(log);
 
+            // Si dailyLogId es null, obtener o crear el DailyLog de hoy
+            if (log.getDailyLogId() == null || log.getDailyLogId() == 0) {
+                DailyLog dailyLog = dailyLogDAO.getOrCreateTodayLog(userId);
+                if (dailyLog == null) {
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                            .entity("{\"error\": \"Could not create daily log\"}").build();
+                }
+                log.setDailyLogId(dailyLog.getId());
+            }
+
+            log.setUserId(userId);
+
+            SleepLog created = sleepLogDAO.createSleepLog(log);
             if (created != null) {
                 return Response.status(Response.Status.CREATED).entity(gson.toJson(created)).build();
             } else {
@@ -37,8 +53,9 @@ public class SleepLogResource {
                         .entity("{\"error\": \"Could not create sleep log\"}").build();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"error\": \"Invalid JSON format\"}").build();
+                    .entity("{\"error\": \"Invalid JSON format: " + e.getMessage() + "\"}").build();
         }
     }
 

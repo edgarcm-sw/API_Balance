@@ -60,4 +60,45 @@ public class DailyLogDAO {
         }
         return logs;
     }
+
+    public DailyLog getOrCreateTodayLog(int userId) {
+        // Buscar el log de hoy
+        String sqlFind = "SELECT * FROM Daily_Log WHERE user_id = ? AND log_date = CURDATE()";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlFind)) {
+
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    DailyLog log = new DailyLog();
+                    log.setId(rs.getInt("id"));
+                    log.setUserId(rs.getInt("user_id"));
+                    log.setLogDate(rs.getDate("log_date"));
+                    log.setCalorieGoal(rs.getDouble("calorie_goal"));
+                    log.setCaloriesConsumed(rs.getDouble("calories_consumed"));
+                    log.setCaloriesRemaining(rs.getDouble("calories_remaining"));
+                    log.setCreatedAt(rs.getTimestamp("created_at"));
+                    return log;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // No existe, crear uno nuevo con meta calórica del perfil
+        double calorieGoal = 2000.00;
+        UserProfileDAO profileDAO = new UserProfileDAO();
+        models.UserProfile profile = profileDAO.getProfileByUserId(userId);
+        if (profile != null && profile.getGetd() > 0) {
+            calorieGoal = profile.getGetd();
+        }
+
+        DailyLog newLog = new DailyLog();
+        newLog.setUserId(userId);
+        newLog.setLogDate(java.sql.Date.valueOf(java.time.LocalDate.now()));
+        newLog.setCalorieGoal(calorieGoal);
+        newLog.setCaloriesConsumed(0);
+        newLog.setCaloriesRemaining(calorieGoal);
+        return createDailyLog(newLog);
+    }
 }

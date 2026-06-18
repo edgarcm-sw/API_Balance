@@ -4,7 +4,7 @@ import java.sql.Time;
 
 public class FoodEntry {
     private int id;
-    private int dailyLogId;
+    private Integer dailyLogId;
     private int foodItemId;
     private int mealCategoryId;
     private double quantity;
@@ -16,8 +16,8 @@ public class FoodEntry {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public int getDailyLogId() { return dailyLogId; }
-    public void setDailyLogId(int dailyLogId) { this.dailyLogId = dailyLogId; }
+    public Integer getDailyLogId() { return dailyLogId; }
+    public void setDailyLogId(Integer dailyLogId) { this.dailyLogId = dailyLogId; }
 
     public int getFoodItemId() { return foodItemId; }
     public void setFoodItemId(int foodItemId) { this.foodItemId = foodItemId; }
