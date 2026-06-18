@@ -93,8 +93,10 @@ INSERT INTO User (name, password, alias, avatar_url) VALUES
 ('Ana Sofia Rios', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Brisa_Marina', NULL),
 ('Luis Fernanda', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Cielo_Claro', NULL);
 
--- Insertar Perfiles (User_Profile)
 INSERT INTO User_Profile (user_id, age, weight, height, tmb, getd) VALUES
 (1, 32, 78.50, 175.00, 1750.00, 2400.00),
 (2, 28, 62.00, 165.00, 1420.00, 1950.00),
-(3, 45, 90.00, 180.00, 1900.00, 2600.00);
+(3, 45, 90.00, 180.00, 1900.00, 2600.00),
+(4, 20, 60.00, 160.00, 1350.00, 1850.00);
+
+
