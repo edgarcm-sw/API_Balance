@@ -38,7 +38,7 @@ public class ExerciseEntryDAO {
     public List<ExerciseEntry> getExerciseEntriesByUserId(int userId) {
         List<ExerciseEntry> entries = new ArrayList<>();
         String sql = "SELECT ee.id, ee.daily_log_id, ee.activity_type_id, " +
-                     "ee.duration_minutes, ee.calories_burned, ee.entry_time, ee.created_at " +
+                     "ee.duration_minutes, ee.calories_burned, ee.entry_time " +
                      "FROM Exercise_Entry ee " +
                      "JOIN Daily_Log dl ON ee.daily_log_id = dl.id " +
                      "WHERE dl.user_id = ? " +

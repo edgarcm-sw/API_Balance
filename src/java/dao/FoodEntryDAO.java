@@ -39,7 +39,7 @@ public class FoodEntryDAO {
     public List<FoodEntry> getFoodEntriesByUserId(int userId) {
         List<FoodEntry> entries = new ArrayList<>();
         String sql = "SELECT fe.id, fe.daily_log_id, fe.food_item_id, fe.meal_category_id, " +
-                     "fe.quantity, fe.total_calories, fe.entry_time, fe.created_at " +
+                     "fe.quantity, fe.total_calories, fe.entry_time " +
                      "FROM Food_Entry fe " +
                      "JOIN Daily_Log dl ON fe.daily_log_id = dl.id " +
                      "WHERE dl.user_id = ? " +
