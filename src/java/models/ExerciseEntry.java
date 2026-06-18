@@ -1,6 +1,6 @@
 package models;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.sql.Time;
 
 public class ExerciseEntry {

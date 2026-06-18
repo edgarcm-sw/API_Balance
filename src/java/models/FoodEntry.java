@@ -1,7 +1,7 @@
 package models;
 
 import java.sql.Time;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 public class FoodEntry {
     private int id;
