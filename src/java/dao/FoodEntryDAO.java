@@ -39,7 +39,7 @@ public class FoodEntryDAO {
     public List<FoodEntry> getFoodEntriesByUserId(int userId) {
         List<FoodEntry> entries = new ArrayList<>();
         String sql = "SELECT fe.id, fe.daily_log_id, fe.food_item_id, fe.meal_category_id, " +
-                     "fe.quantity, fe.total_calories, fe.entry_time " +
+                     "fe.quantity, fe.total_calories, fe.entry_time, fe.created_at " +
                      "FROM Food_Entry fe " +
                      "JOIN Daily_Log dl ON fe.daily_log_id = dl.id " +
                      "WHERE dl.user_id = ? " +
@@ -59,6 +59,7 @@ public class FoodEntryDAO {
                     entry.setQuantity(rs.getDouble("quantity"));
                     entry.setTotalCalories(rs.getDouble("total_calories"));
                     entry.setEntryTime(rs.getTime("entry_time"));
+                    entry.setCreatedAt(rs.getTimestamp("created_at"));
                     entries.add(entry);
                 }
             }

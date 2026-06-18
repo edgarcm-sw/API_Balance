@@ -47,6 +47,7 @@ public class SleepLogResource {
 
             SleepLog created = sleepLogDAO.createSleepLog(log);
             if (created != null) {
+                created.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
                 return Response.status(Response.Status.CREATED).entity(gson.toJson(created)).build();
             } else {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

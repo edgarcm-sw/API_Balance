@@ -9,6 +9,7 @@ public class ExerciseEntry {
     private int durationMinutes;
     private double caloriesBurned;
     private Time entryTime;
+    private Timestamp createdAt;
 
     public ExerciseEntry() {}
 
@@ -29,4 +30,7 @@ public class ExerciseEntry {
 
     public Time getEntryTime() { return entryTime; }
     public void setEntryTime(Time entryTime) { this.entryTime = entryTime; }
+
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 }

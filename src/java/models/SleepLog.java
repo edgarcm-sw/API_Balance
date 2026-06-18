@@ -10,6 +10,7 @@ public class SleepLog {
     private Timestamp wakeTime;
     private double totalHours;
     private int qualityPercentage;
+    private Timestamp createdAt;
 
     public SleepLog() {}
 
@@ -33,4 +34,7 @@ public class SleepLog {
 
     public int getQualityPercentage() { return qualityPercentage; }
     public void setQualityPercentage(int qualityPercentage) { this.qualityPercentage = qualityPercentage; }
+
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 }

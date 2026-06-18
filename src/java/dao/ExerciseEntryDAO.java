@@ -38,7 +38,7 @@ public class ExerciseEntryDAO {
     public List<ExerciseEntry> getExerciseEntriesByUserId(int userId) {
         List<ExerciseEntry> entries = new ArrayList<>();
         String sql = "SELECT ee.id, ee.daily_log_id, ee.activity_type_id, " +
-                     "ee.duration_minutes, ee.calories_burned, ee.entry_time " +
+                     "ee.duration_minutes, ee.calories_burned, ee.entry_time, ee.created_at " +
                      "FROM Exercise_Entry ee " +
                      "JOIN Daily_Log dl ON ee.daily_log_id = dl.id " +
                      "WHERE dl.user_id = ? " +
@@ -57,6 +57,7 @@ public class ExerciseEntryDAO {
                     entry.setDurationMinutes(rs.getInt("duration_minutes"));
                     entry.setCaloriesBurned(rs.getDouble("calories_burned"));
                     entry.setEntryTime(rs.getTime("entry_time"));
+                    entry.setCreatedAt(rs.getTimestamp("created_at"));
                     entries.add(entry);
                 }
             }
