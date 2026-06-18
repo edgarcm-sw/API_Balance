@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.Response;
 import models.User;
 import models.UserProfile;
 import models.DailyLog;
+import util.PasswordUtil;
 
 import java.util.List;
 
@@ -66,6 +67,32 @@ public class UserResource {
         }
     }
 
+    // POST /api/users/login
+    @POST
+    @Path("/login")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(String jsonRequest) {
+        try {
+            User credentials = gson.fromJson(jsonRequest, User.class);
+
+            if (credentials.getName() == null || credentials.getPassword() == null)
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("{\"error\": \"Name and password are required\"}").build();
+
+            User user = userDAO.getUserByName(credentials.getName());
+            if (user == null || !PasswordUtil.verify(credentials.getPassword(), user.getPassword()))
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("{\"error\": \"Invalid alias or password\"}").build();
+
+            user.setPassword(null);
+            return Response.ok(gson.toJson(user)).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"Invalid JSON format\"}").build();
+        }
+    }
+
     // PUT /api/users/{id} (actualizar alias y avatar)
     @PUT
     @Path("/{id}")
@@ -118,5 +145,28 @@ public class UserResource {
     public Response getUserLogs(@PathParam("id") int id) {
         List<DailyLog> logs = dailyLogDAO.getLogsByUserId(id);
         return Response.ok(gson.toJson(logs)).build();
+    }
+
+    // POST /api/users/{id}/logs
+    @POST
+    @Path("/{id}/logs")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createDailyLog(@PathParam("id") int id, String jsonRequest) {
+        try {
+            DailyLog log = gson.fromJson(jsonRequest, DailyLog.class);
+            log.setUserId(id);
+            DailyLog created = dailyLogDAO.createDailyLog(log);
+
+            if (created != null) {
+                return Response.status(Response.Status.CREATED).entity(gson.toJson(created)).build();
+            } else {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("{\"error\": \"Could not create daily log\"}").build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"Invalid JSON format\"}").build();
+        }
     }
 }
